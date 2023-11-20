@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cekprodukisrael_app/page/about_page.dart';
 
 /// Flutter code sample for [SearchBar].
 
@@ -22,8 +23,25 @@ class _SearchBarAppState extends State<SearchBarApp> {
 
     return MaterialApp(
       theme: themeData,
-      home: Scaffold(
-        appBar: AppBar(title: const Text('Search Bar Sample')),
+      home: Builder(
+        builder: (context) => Scaffold(
+        appBar: AppBar(
+        // Here we take the value from the MyHomePage object that was created by
+        // the App.build method, and use it to set our appbar title.
+        title: const Text('Cek Produk Israel'),
+        actions: <Widget>[
+          IconButton(
+            icon: const Icon(Icons.info_outline),
+            tooltip: 'About',
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const AboutPage()),
+              );
+            },
+          ),
+        ],
+      ),
         body: Padding(
           padding: const EdgeInsets.all(8.0),
           child: SearchAnchor(
@@ -69,6 +87,7 @@ class _SearchBarAppState extends State<SearchBarApp> {
               );
             });
           }),
+        ),
         ),
       ),
     );
