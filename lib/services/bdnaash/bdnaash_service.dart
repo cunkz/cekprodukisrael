@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-
+import 'dart:convert';
 import 'package:cekprodukisrael_app/models/bdnaash/bdnaash_search_model.dart';
 import 'package:cekprodukisrael_app/models/bdnaash/bdnaash_search_suggestions_model.dart';
 
@@ -31,7 +31,7 @@ class BdnaashService {
     } catch (e) {
       // await FirebaseCrashlytics.instance
       //     .recordError(e, null, reason: "bdnaash-search");
-      throw e;
+      rethrow;
     }
   }
 
@@ -53,12 +53,12 @@ class BdnaashService {
         ),
       );
       final result = response.data;
-      var res = BdnaashSearchModel.fromJson(result);
+      var res = BdnaashSearchModel.fromJson(json.decode(result));
       return res;
     } catch (e) {
       // await FirebaseCrashlytics.instance
       //     .recordError(e, null, reason: "bdnaash-search");
-      throw e;
+      rethrow;
     }
   }
 }
