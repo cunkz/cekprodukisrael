@@ -1,16 +1,16 @@
-# cekprodukisrael_app
+# Cek Product Israel
 
-A new Flutter project.
+Aplikasi untuk melihat status apakah sebuah produk terafiliasi dengan Israel.
 
-## Getting Started
+## Features
 
-This project is a starting point for a Flutter application.
+- [x] Pencarian berdasarkan induk merk/brand internasional
+- [ ] Menampilkan *auto-suggestion* daftar merk/brand internasional
+- [ ] Pencarian berdasarkan merk/brand lokal Indonesia
+- [ ] Scan barcode yang tertera produk lokal Indonesia
 
-A few resources to get you started if this is your first Flutter project:
+## Screenshots
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## LICENSE
+Cek Produk Israel berlisensi [MIT-licensed](https://github.com/cunkz/cekprodukisrael/blob/main/LICENSE).
