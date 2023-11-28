@@ -1,5 +1,5 @@
 name: cekprodukisrael_app
-description: A new Flutter project.
+description: Aplikasi untuk cek produk yang terafiliasi dengan Israel.
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
@@ -49,6 +49,10 @@ dev_dependencies:
   # rules and activating additional ones.
   flutter_lints: ^2.0.0
 
+flutter_icons:
+  image_path: "assets/icon.png"
+  android: true
+  ios: false
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 

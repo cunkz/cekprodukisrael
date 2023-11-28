@@ -91,87 +91,100 @@ class _SearchBarAppState extends State<SearchBarApp> {
       theme: themeData,
       home: Builder(
         builder: (context) => Scaffold(
-          appBar: AppBar(
-            // Here we take the value from the MyHomePage object that was created by
-            // the App.build method, and use it to set our appbar title.
-            title: const Text('Cek Produk Israel'),
-            actions: <Widget>[
-              IconButton(
-                icon: const Icon(Icons.info_outline),
-                tooltip: 'About',
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const AboutPage()),
-                  );
-                },
+              appBar: AppBar(
+                // Here we take the value from the MyHomePage object that was created by
+                // the App.build method, and use it to set our appbar title.
+                title: const Text('Cek Produk Israel'),
+                actions: <Widget>[
+                  IconButton(
+                    icon: const Icon(Icons.info_outline),
+                    tooltip: 'About',
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const AboutPage()),
+                      );
+                    },
+                  ),
+                ],
               ),
-            ],
-          ),
-          body: Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: Column(
-                  // mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: <Widget>[
-                    SearchBar(
-                        // controller: controller,
-                        padding: const MaterialStatePropertyAll<EdgeInsets>(
-                            EdgeInsets.symmetric(horizontal: 16.0)),
-                        onTap: () {
-                          // controller.openView();
-                        },
-                        onChanged: (value) {
-                          // controller.openView();
-                          if(value == "") {
-                            setState(() {
-                              targetBrand = value;
-                            });
-                          }
-                        },
-                        onSubmitted: (value) {
-                          ScaffoldMessenger.of(context)
-                            .showSnackBar(const SnackBar(
-                              content: Text('Proses pencarian sedang berjalan...'),
-                              duration: Duration(seconds: 30),
-                            ));
-                          var bdnaash = BdnaashService();
-                          final response = bdnaash.search(value);
-                          response.then((responseValue) => 
-                            setState(() {
-                              ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                              targetBrand = responseValue.data.title ?? "A";
-                              isProIsrael = responseValue.data.isProIsrael == "1";
-                            })
-                          );
-                        },
-                        leading: const Icon(Icons.search),
-                        trailing: <Widget>[
-                          Tooltip(
-                            message: 'Ambil Gambar',
-                            child: IconButton(
-                              // isSelected: isDark,
-                              onPressed: () {
+              body: Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: Column(
+                      // mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: <Widget>[
+                        SearchBar(
+                            // controller: controller,
+                            padding: const MaterialStatePropertyAll<EdgeInsets>(
+                                EdgeInsets.symmetric(horizontal: 16.0)),
+                            onTap: () {
+                              // controller.openView();
+                              setState(() {
+                                targetBrand = "";
+                              });
+                            },
+                            onChanged: (value) {
+                              // controller.openView();
+                              if(value == "") {
                                 setState(() {
-                                  ScaffoldMessenger.of(context)
-                                    .showSnackBar(const SnackBar(
-                                      content: Text('Fitur ambil gambar belum tersedia'),
-                                    ));
-                                  // isDark = !isDark;
+                                  targetBrand = value;
                                 });
-                              },
-                              icon: const Icon(Icons.camera_alt),
-                              selectedIcon: const Icon(Icons.camera_alt),
-                            ),
-                          )
-                        ],
-                      ),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 10.0),
-                      child: _buildResult(),
-                    )
-                  ])),
-        ),
+                              }
+                            },
+                            onSubmitted: (value) {
+                              ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                              if(value != "") {
+                                ScaffoldMessenger.of(context)
+                                  .showSnackBar(const SnackBar(
+                                    content: Text('Proses pencarian sedang berjalan...'),
+                                    duration: Duration(seconds: 30),
+                                  ));
+                                var bdnaash = BdnaashService();
+                                final response = bdnaash.search(value);
+                                response.then((responseValue) => 
+                                  setState(() {
+                                    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                                    targetBrand = responseValue.data.title ?? "";
+                                    isProIsrael = responseValue.data.isProIsrael == "1";
+                                  })
+                                );
+                              } else {
+                                setState(() {
+                                  ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                                  targetBrand = "";
+                                  isProIsrael = false;
+                                });
+                              }
+                            },
+                            leading: const Icon(Icons.search),
+                            trailing: <Widget>[
+                              Tooltip(
+                                message: 'Scan Barcode',
+                                child: IconButton(
+                                  // isSelected: isDark,
+                                  onPressed: () {
+                                    FocusManager.instance.primaryFocus?.unfocus();
+                                    setState(() {
+                                      ScaffoldMessenger.of(context)
+                                        .showSnackBar(const SnackBar(
+                                          content: Text('Fitur scan barcode belum tersedia'),
+                                        ));
+                                      // isDark = !isDark;
+                                    });
+                                  },
+                                  icon: const Icon(Icons.camera_alt),
+                                  selectedIcon: const Icon(Icons.camera_alt),
+                                ),
+                              )
+                            ],
+                          ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 10.0),
+                          child: _buildResult(),
+                        )
+                      ])),
+            ),
       ),
     );
   }

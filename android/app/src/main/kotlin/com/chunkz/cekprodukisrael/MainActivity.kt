@@ -1,4 +1,4 @@
-package com.example.cekprodukisrael_app
+package com.chunkz.cekprodukisrael
 
 import io.flutter.embedding.android.FlutterActivity
 
