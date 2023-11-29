@@ -13,6 +13,15 @@ Aplikasi untuk melihat status apakah sebuah produk terafiliasi dengan Israel.
 
 ## Screenshots
 
+<table width="100%">
+  <tbody>
+    <tr>
+      <td width="1%"><img src="https://raw.githubusercontent.com/cunkz/cekprodukisrael/master/assets/ss-1.jpg"/></td>
+      <td width="1%"><img src="https://raw.githubusercontent.com/cunkz/cekprodukisrael/master/assets/ss-2.jpg"/></td>
+       <td width="1%"><img src="https://raw.githubusercontent.com/cunkz/cekprodukisrael/master/assets/ss-3.jpg"/></td>
+    </tr>
+  </tbody>
+</table>
 
 ## LICENSE
 Cek Produk Israel berlisensi [MIT-licensed](https://github.com/cunkz/cekprodukisrael/blob/main/LICENSE).
