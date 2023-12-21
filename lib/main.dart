@@ -145,8 +145,10 @@ class _SearchBarAppState extends State<SearchBarApp> {
                                 response.then((responseValue) => 
                                   setState(() {
                                     ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                                    targetBrand = responseValue.data.title ?? "";
-                                    isProIsrael = responseValue.data.isProIsrael == "1";
+                                    // targetBrand = responseValue.data.title ?? "";
+                                    // isProIsrael = responseValue.data.isProIsrael == "1";
+                                    targetBrand = value;
+                                    isProIsrael = responseValue.statusClass == "b-red";
                                   })
                                 );
                               } else {
