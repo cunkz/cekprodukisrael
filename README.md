@@ -7,6 +7,7 @@ Aplikasi untuk melihat status apakah sebuah produk terafiliasi dengan Israel.
 ## Features
 
 - [x] Pencarian berdasarkan induk merk/brand internasional
+- [x] Upload gambar produk, merk, brand internasional
 - [ ] Menampilkan *auto-suggestion* daftar merk/brand internasional
 - [ ] Pencarian berdasarkan merk/brand lokal Indonesia
 - [ ] Scan barcode yang tertera produk lokal Indonesia
@@ -18,7 +19,7 @@ Aplikasi untuk melihat status apakah sebuah produk terafiliasi dengan Israel.
     <tr>
       <td width="1%"><img src="https://raw.githubusercontent.com/cunkz/cekprodukisrael/master/assets/ss-1.jpg"/></td>
       <td width="1%"><img src="https://raw.githubusercontent.com/cunkz/cekprodukisrael/master/assets/ss-2.jpg"/></td>
-       <td width="1%"><img src="https://raw.githubusercontent.com/cunkz/cekprodukisrael/master/assets/ss-3.jpg"/></td>
+       <td width="1%"><img src="https://raw.githubusercontent.com/cunkz/cekprodukisrael/master/assets/ss-4.jpg"/></td>
     </tr>
   </tbody>
 </table>
