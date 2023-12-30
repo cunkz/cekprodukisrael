@@ -1,6 +1,13 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:cekprodukisrael_app/page/about_page.dart';
 import 'package:cekprodukisrael_app/services/bdnaash/bdnaash_service.dart';
+
+import 'package:image_picker/image_picker.dart';
+import 'package:cekprodukisrael_app/components/image_widget.dart';
+import 'package:cekprodukisrael_app/models/local/recognition_response.dart';
+import 'package:cekprodukisrael_app/recognizer/interface/text_recognizer.dart';
+import 'package:cekprodukisrael_app/recognizer/mlkit_text_recognizer.dart';
 
 /// Flutter code sample for [SearchBar].
 
@@ -14,77 +21,46 @@ class SearchBarApp extends StatefulWidget {
 }
 
 class _SearchBarAppState extends State<SearchBarApp> {
+
+  late ImagePicker _picker;
+  late ITextRecognizer _recognizer;
+
+  RecognitionResponse? _response;
+
   // bool isDark = false;
   bool isLoading = true;
   bool isProIsrael = false;
   String targetBrand = "";
+  String responseImageText = "";
+
+  @override
+  void initState() {
+    super.initState();
+    _picker = ImagePicker();
+
+    /// Can be [MLKitTextRecognizer] or [TesseractTextRecognizer]
+    _recognizer = MLKitTextRecognizer();
+    // _recognizer = TesseractTextRecognizer();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    if (_recognizer is MLKitTextRecognizer) {
+      (_recognizer as MLKitTextRecognizer).dispose();
+    }
+  }
+
+  Future<String?> obtainImage(ImageSource source) async {
+    final file = await _picker.pickImage(source: source);
+    return file?.path;
+  }
 
   @override
   Widget build(BuildContext context) {
     final ThemeData themeData = ThemeData(
         useMaterial3: true,
     );
-        // brightness: isDark ? Brightness.dark : Brightness.light);
-
-    // Find the ScaffoldMessenger in the widget tree
-    // and use it to show a SnackBar.
-
-    // const searchAncorWidget = SearchAnchor(builder:
-    //                     (BuildContext context, SearchController controller) {
-    //                   return SearchBar(
-    //                     controller: controller,
-    //                     padding: const MaterialStatePropertyAll<EdgeInsets>(
-    //                         EdgeInsets.symmetric(horizontal: 16.0)),
-    //                     onTap: () {
-    //                       controller.openView();
-    //                     },
-    //                     onChanged: (value) {
-    //                       controller.openView();
-    //                       setState(() {
-    //                         targetBrand = value;
-    //                       });
-    //                     },
-    //                     onSubmitted: (value) {
-    //                       setState(() {
-    //                         targetBrand = value;
-    //                       });
-                          
-    //                     },
-    //                     leading: const Icon(Icons.search),
-    //                     trailing: <Widget>[
-    //                       Tooltip(
-    //                         message: 'Change brightness mode',
-    //                         child: IconButton(
-    //                           isSelected: isDark,
-    //                           onPressed: () {
-    //                             setState(() {
-    //                               ScaffoldMessenger.of(context)
-    //                                   .showSnackBar(snackBar);
-    //                               // isDark = !isDark;
-    //                             });
-    //                           },
-    //                           icon: const Icon(Icons.camera_alt),
-    //                           selectedIcon: const Icon(Icons.camera_alt),
-    //                         ),
-    //                       )
-    //                     ],
-    //                   );
-    //                 }, suggestionsBuilder:
-    //                     (BuildContext context, SearchController controller) {
-    //                   return List<ListTile>.generate(5, (int index) {
-    //                     final String item = 'item $index';
-    //                     return ListTile(
-    //                       title: Text(item),
-    //                       onTap: () {
-    //                         setState(() {
-    //                           controller.closeView(item);
-    //                           targetBrand = item;
-    //                           // print(item);
-    //                         });
-    //                       },
-    //                     );
-    //                   });
-    //                 });
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
@@ -114,6 +90,7 @@ class _SearchBarAppState extends State<SearchBarApp> {
                       // mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: <Widget>[
+                        _buildImage(),
                         SearchBar(
                             // controller: controller,
                             padding: const MaterialStatePropertyAll<EdgeInsets>(
@@ -121,16 +98,16 @@ class _SearchBarAppState extends State<SearchBarApp> {
                             onTap: () {
                               // controller.openView();
                               setState(() {
-                                targetBrand = "";
+                                // targetBrand = "";
                               });
                             },
                             onChanged: (value) {
                               // controller.openView();
-                              if(value == "") {
+                              // if(value == "") {
                                 setState(() {
                                   targetBrand = value;
                                 });
-                              }
+                              // }
                             },
                             onSubmitted: (value) {
                               ScaffoldMessenger.of(context).hideCurrentSnackBar();
@@ -157,23 +134,119 @@ class _SearchBarAppState extends State<SearchBarApp> {
                                   targetBrand = "";
                                   isProIsrael = false;
                                 });
-                              }
+                              }                
                             },
                             leading: const Icon(Icons.search),
                             trailing: <Widget>[
                               Tooltip(
-                                message: 'Scan Barcode',
+                                message: 'Pilih Gambar',
                                 child: IconButton(
                                   // isSelected: isDark,
                                   onPressed: () {
                                     FocusManager.instance.primaryFocus?.unfocus();
-                                    setState(() {
-                                      ScaffoldMessenger.of(context)
-                                        .showSnackBar(const SnackBar(
-                                          content: Text('Fitur scan barcode belum tersedia'),
-                                        ));
-                                      // isDark = !isDark;
-                                    });
+                                    showDialog(
+                                      context: context,
+                                      builder: (context) => imagePickAlert(
+                                        onCameraPressed: () async {
+                                          _response = null;
+                                          final imgPath = await obtainImage(ImageSource.camera);
+                                          if (imgPath == null) return;
+
+                                          final recognizedText = await _recognizer.processImage(imgPath);
+                                          if (!context.mounted) return;
+                                          ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                                          _response = RecognitionResponse(
+                                            imgPath: imgPath,
+                                            recognizedText: recognizedText,
+                                            // recognizedText: "NIVEA",
+                                          );
+                                          responseImageText = recognizedText;
+                                          // responseImageText = "NIVEA";
+
+                                          if (!context.mounted) return;
+                                          // Navigator.of(context).pop();
+                                          ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                                          if(responseImageText != "") {
+                                            ScaffoldMessenger.of(context)
+                                              .showSnackBar(const SnackBar(
+                                                content: Text('Proses pencarian sedang berjalan...'),
+                                                duration: Duration(seconds: 30),
+                                              ));
+                                            var bdnaash = BdnaashService();
+                                            final response = bdnaash.search(responseImageText);
+                                            response.then((responseValue) => 
+                                              setState(() {
+                                                ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                                                Navigator.of(context).pop();
+                                                // targetBrand = responseValue.data.title ?? "";
+                                                // isProIsrael = responseValue.data.isProIsrael == "1";
+                                                targetBrand = responseImageText;
+                                                isProIsrael = responseValue.statusClass == "b-red";
+                                              })
+                                            );
+                                          } else {
+                                            setState(() {
+                                              ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                                              Navigator.of(context).pop();
+                                              targetBrand = "";
+                                              isProIsrael = false;
+                                            });
+                                          }
+                                        },
+                                        onGalleryPressed: () async {
+                                          final imgPath = await obtainImage(ImageSource.gallery);
+                                          if (imgPath == null) return;
+                                          
+                                          final recognizedText = await _recognizer.processImage(imgPath);
+                                          if (!context.mounted) return;
+                                          ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                                          _response = RecognitionResponse(
+                                            imgPath: imgPath,
+                                            recognizedText: recognizedText,
+                                            // recognizedText: "NIVEA",
+                                          );
+                                          responseImageText = recognizedText;
+                                          // responseImageText = "NIVEA";
+
+                                          if (!context.mounted) return;
+                                          // Navigator.of(context).pop();
+                                          ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                                          if(responseImageText != "") {
+                                            ScaffoldMessenger.of(context)
+                                              .showSnackBar(const SnackBar(
+                                                content: Text('Proses pencarian sedang berjalan...'),
+                                                duration: Duration(seconds: 30),
+                                              ));
+                                            var bdnaash = BdnaashService();
+                                            final response = bdnaash.search(responseImageText);
+                                            response.then((responseValue) => 
+                                              setState(() {
+                                                ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                                                Navigator.of(context).pop();
+                                                // targetBrand = responseValue.data.title ?? "";
+                                                // isProIsrael = responseValue.data.isProIsrael == "1";
+                                                targetBrand = responseImageText;
+                                                isProIsrael = responseValue.statusClass == "b-red";
+                                              })
+                                            );
+                                          } else {
+                                            setState(() {
+                                              ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                                              Navigator.of(context).pop();
+                                              targetBrand = "";
+                                              isProIsrael = false;
+                                            });
+                                          }
+                                        },
+                                      ),
+                                    );
+                                    // setState(() {
+                                    //   ScaffoldMessenger.of(context)
+                                    //     .showSnackBar(const SnackBar(
+                                    //       content: Text('Fitur scan barcode belum tersedia'),
+                                    //     ));
+                                    //   // isDark = !isDark;
+                                    // });
                                   },
                                   icon: const Icon(Icons.camera_alt),
                                   selectedIcon: const Icon(Icons.camera_alt),
@@ -189,6 +262,62 @@ class _SearchBarAppState extends State<SearchBarApp> {
             ),
       ),
     );
+  }
+
+  Widget _buildImage() {
+    if(_response == null) {
+      return const Text("");
+    } else {
+      return Column(
+              children: <Widget>[
+                ElevatedButton.icon(
+                  onPressed: () {
+                    setState(() {
+                      _response = null;
+                      targetBrand = "";
+                      isProIsrael = false;
+                    });
+                  },
+                  icon: const Icon( // <-- Icon
+                    Icons.close,
+                    size: 24.0,
+                  ),
+                  label: const Text('Tutup Gambar'), // <-- Text
+                ),
+                Container(
+                  margin: const EdgeInsets.all(15.0),
+                  // padding: const EdgeInsets.all(3.0),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.blueAccent)
+                  ),
+                  child: SizedBox(
+                    height: MediaQuery.of(context).size.width,
+                    width: MediaQuery.of(context).size.width,
+                    child: Image.file(File(_response!.imgPath)),
+                  ),
+                )
+                // Padding(
+                //     padding: const EdgeInsets.all(16),
+                //     child: Column(
+                //       crossAxisAlignment: CrossAxisAlignment.start,
+                //       children: [
+                //         Row(
+                //           children: [
+                //             Expanded(
+                //               child: Text(
+                //                 "Recognized Text",
+                //                 style: Theme.of(context).textTheme.titleLarge,
+                //               ),
+                //             ),
+                //           ],
+                //         ),
+                //         const SizedBox(height: 10),
+                //         Text(_response!.recognizedText),
+                //       ],
+                //     )),
+              ],
+            );
+    }
   }
 
   Widget _buildResult() {
