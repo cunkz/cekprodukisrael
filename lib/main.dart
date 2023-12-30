@@ -97,16 +97,16 @@ class _SearchBarAppState extends State<SearchBarApp> {
                                 EdgeInsets.symmetric(horizontal: 16.0)),
                             onTap: () {
                               // controller.openView();
-                              setState(() {
-                                // targetBrand = "";
-                              });
+                              // setState(() {
+                              //   targetBrand = "";
+                              // });
                             },
                             onChanged: (value) {
                               // controller.openView();
                               // if(value == "") {
-                                setState(() {
-                                  targetBrand = value;
-                                });
+                              //   setState(() {
+                              //     targetBrand = value;
+                              //   });
                               // }
                             },
                             onSubmitted: (value) {
@@ -134,9 +134,24 @@ class _SearchBarAppState extends State<SearchBarApp> {
                                   targetBrand = "";
                                   isProIsrael = false;
                                 });
-                              }                
+                              }
                             },
-                            leading: const Icon(Icons.search),
+                            hintText: "Ketik nama produk, merk, brand yang ingin dicari",
+                            shape: MaterialStateProperty.all(const ContinuousRectangleBorder(
+                              borderRadius: BorderRadius.all(Radius.circular(20)),
+                            )),
+                            leading: IconButton(
+                              // isSelected: isDark,
+                              onPressed: () {
+                                FocusManager.instance.primaryFocus?.unfocus();
+                                setState(() {
+                                  targetBrand = "";
+                                  isProIsrael = false;
+                                });
+                              },
+                              icon: const Icon(Icons.camera_alt),
+                              selectedIcon: const Icon(Icons.camera_alt),
+                            ),
                             trailing: <Widget>[
                               Tooltip(
                                 message: 'Pilih Gambar',
