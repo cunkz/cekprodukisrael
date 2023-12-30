@@ -73,6 +73,18 @@ class _SearchBarAppState extends State<SearchBarApp> {
                 title: const Text('Cek Produk Israel'),
                 actions: <Widget>[
                   IconButton(
+                    icon: const Icon(Icons.refresh),
+                    tooltip: 'Refresh',
+                    onPressed: () {
+                      FocusManager.instance.primaryFocus?.unfocus();
+                      setState(() {
+                        _response = null;
+                        targetBrand = "";
+                        isProIsrael = false;
+                      });
+                    },
+                  ),
+                  IconButton(
                     icon: const Icon(Icons.info_outline),
                     tooltip: 'About',
                     onPressed: () {
@@ -140,18 +152,7 @@ class _SearchBarAppState extends State<SearchBarApp> {
                             shape: MaterialStateProperty.all(const ContinuousRectangleBorder(
                               borderRadius: BorderRadius.all(Radius.circular(20)),
                             )),
-                            leading: IconButton(
-                              // isSelected: isDark,
-                              onPressed: () {
-                                FocusManager.instance.primaryFocus?.unfocus();
-                                setState(() {
-                                  targetBrand = "";
-                                  isProIsrael = false;
-                                });
-                              },
-                              icon: const Icon(Icons.camera_alt),
-                              selectedIcon: const Icon(Icons.camera_alt),
-                            ),
+                            leading: const Icon(Icons.search),
                             trailing: <Widget>[
                               Tooltip(
                                 message: 'Pilih Gambar',
